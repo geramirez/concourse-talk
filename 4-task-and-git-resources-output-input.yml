@@ -1,0 +1,86 @@
+resources:
+- name: github-repo-resource-source
+  type: git
+  source:
+    uri: git@github.com:geramirez/concourse-demo.git
+    branch: master
+    private_key: {{github-private-key}}
+
+- name: github-repo-resource-dest
+  type: git
+  source:
+    uri: git@github.com:geramirez/concourse-demo.git
+    branch: master
+    private_key: {{github-private-key}}
+
+jobs:
+- name: Deploy Current Date
+  plan:
+  - get: github-repo-resource-source
+    trigger: true
+  - task: get-date
+    config:
+      platform: linux
+      image_resource:
+        type: docker-image
+        source: {repository: busybox}
+      outputs:
+      - name: get-date-artifacts
+      run:
+        path: sh
+        args:
+        - -exc
+        - |
+          echo "Exporting the date"
+          echo $(date) > get-date-artifacts/date-output.txt
+
+  - task: modify-date
+    config:
+      platform: linux
+      image_resource:
+        type: docker-image
+        source: {repository: busybox}
+      inputs:
+      - name: get-date-artifacts
+      outputs:
+      - name: modify-date-artifacts
+      run:
+        path: sh
+        args:
+        - -exc
+        - |
+          echo "Replacing 1s with 9s in the date"
+          sed -ie 's/1/9/g' get-date-artifacts/date-output.txt
+          echo "Moving the date into the output dir"
+          mv get-date-artifacts/date-output.txt modify-date-artifacts/date-output.txt
+
+  - task: commit-date
+    config:
+      platform: linux
+      image_resource:
+        type: docker-image
+        source: {repository: bravissimolabs/alpine-git}
+      inputs:
+      - name: modify-date-artifacts
+      - name: github-repo-resource-source
+      outputs:
+      - name: final-artifacts
+      run:
+        path: sh
+        args:
+        - -exc
+        - |
+          echo "Clone the output resource to edit"
+          git clone github-repo-resource-source final-artifacts
+          echo "Modify the date-output file with the new data"
+          cat modify-date-artifacts/date-output.txt >> final-artifacts/date-output.txt
+          echo "Commit the changes"
+          cd final-artifacts
+          git config --global user.email "nobody@concourse.ci"
+          git config --global user.name "Nobody"
+          git add .
+          git commit -m "WIP $(date)"
+  - put: github-repo-resource-dest
+    params:
+      repository: final-artifacts
+      rebase: true

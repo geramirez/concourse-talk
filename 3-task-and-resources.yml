@@ -1,0 +1,62 @@
+resources:
+- name: every-1m
+  type: time
+  source: {interval: 1m}
+
+jobs:
+- name: Get Current Date
+  plan:
+  - get: every-1m
+    trigger: true
+  - task: get-date
+    config:
+      platform: linux
+      image_resource:
+        type: docker-image
+        source: {repository: busybox}
+      outputs:
+      - name: get-date-artifacts
+      run:
+        path: sh
+        args:
+        - -exc
+        - |
+          cd get-date-artifacts
+          echo $(date) > date-output.txt
+          cat date-output.txt
+  - task: modify-date
+    config:
+      platform: linux
+      image_resource:
+        type: docker-image
+        source: {repository: busybox}
+      inputs:
+      - name: get-date-artifacts
+      outputs:
+      - name: modify-date-artifacts
+      run:
+        path: sh
+        args:
+        - -exc
+        - |
+          cd get-date-artifacts
+          sed -ie 's/1/9/g' date-output.txt
+          cd ..
+          mv get-date-artifacts/date-output.txt modify-date-artifacts/date-output.txt
+
+  - task: print-date
+    config:
+      platform: linux
+      image_resource:
+        type: docker-image
+        source: {repository: busybox}
+      inputs:
+      - name: modify-date-artifacts
+      run:
+        path: sh
+        args:
+        - -exc
+        - |
+          cat modify-date-artifacts/date-output.txt
+
+

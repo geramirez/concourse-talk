@@ -1,0 +1,15 @@
+jobs:
+- name: Get Current Date
+  plan:
+  - task: get-date
+    config:
+      platform: linux
+      image_resource:
+        type: docker-image
+        source: {repository: busybox}
+      run:
+        path: sh
+        args:
+        - -exc
+        - |
+          date
