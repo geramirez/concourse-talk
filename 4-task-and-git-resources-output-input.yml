@@ -1,3 +1,4 @@
+# 2 resources, 1 job, 3 tasks
 resources:
 - name: github-repo-resource-source
   type: git

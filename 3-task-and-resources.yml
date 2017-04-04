@@ -1,3 +1,4 @@
+# 1 resource, 3 tasks, 1 job
 resources:
 - name: every-1m
   type: time
