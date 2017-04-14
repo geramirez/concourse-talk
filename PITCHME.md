@@ -11,18 +11,18 @@
     - Pipelines
 - Some examples
 ---
-## What is Concourse CI - Background?
+## Background
 - Started by a CF engineer
 - Created CF team was having difficulties with existing CI systems
 - Maintained by Pivotal
 ---
-## What is Concourse CI - TLDR?
+## What is Concourse CI?
 It's a continuous integration tool which creates environments and runs scripts.
 What makes Concourse CI unique is that it forces users to declare configuration upfront.
 ---
 ## What does that mean?
 - CI pipeline configurations and tasks can be checked into version control
-- CI pipeline configurations are not dependent on the state of the servers running the pipeline
+- Workers will always have the same configurations and will be reconfigured before each task
 - CI pipelines are completely reproducible
 ---
 ## Why use it?
@@ -38,7 +38,7 @@ What makes Concourse CI unique is that it forces users to declare configuration 
 ---
 ## Tasks
 The smallest configurable unit in a Concourse pipeline is a single task.
-Ideally tasks are pure functions: given the same set of inputs, it should either always succeed with the same outputs or always fail.
+Ideally tasks are pure functions.
 ```yml
   - task: annoy
     config:
@@ -62,7 +62,7 @@ jobs:
 ```
 ---
 ## Resources
-Resources are objects serve as inputs and outputs for the pipeline
+Resources are the inputs and outputs of jobs
 ```
 resources:
 - name: git-repo
@@ -76,10 +76,11 @@ resources:
 Combination of resources and jobs
 ![pipeline-image](https://concourse.ci/pipes.svg)
 ---
-### Example
+### Setup
 ```bash
 docker-compose up
 fly -t local login -c http://127.0.0.1:8080
+# concourse/changeme
 fly -t local set-pipeline -p demo -c 1-task-only.yml
 ```
 ---
