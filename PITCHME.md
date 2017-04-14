@@ -11,8 +11,13 @@
     - Pipelines
 - Some examples
 ---
-## What is Concourse CI?
-Is a continuous integration tool, which allows/forces users to declare all their CI pipelines configurations in yaml a dsl, script, or container. 
+## What is Concourse CI - Background?
+- Started by a CF engineer
+- Created CF team was having difficulties with existing CI systems
+- Maintained by Pivotal
+---
+## What is Concourse CI - TLDR?
+Is a continuous integration tool, which allows/forces users to declare all their CI pipelines configurations in yaml or containers. 
 ---
 ## What does that mean?
 - CI pipeline configurations and tasks can be checked into version control
@@ -24,8 +29,7 @@ Is a continuous integration tool, which allows/forces users to declare all their
 2. Allows development teams to have more control of configurations  
 3. Less ceremony around creating new tasks  
 ---
-## Concourse Primitives
-Concourse Elements
+## Concourse Elements
 - Tasks
 - Jobs
 - Resources
@@ -60,21 +64,26 @@ jobs:
 Resources are objects serve as inputs and outputs for the pipeline
 ```
 resources:
-- name: concourse
+- name: git-repo
   type: git
   source:
-    uri: https://github.com/concourse/concourse.git
+    uri: https://github.com/some-org/some-repo.git
     branch: master
 ```
 ---
 ## Pipelines
 Combination of resources and jobs
+![pipeline-image](https://concourse.ci/pipes.svg)
+---
+### Tools 
+- fly cli - cli tool used to configure concourse (think cf cli or jenkins cli)
+- Concourse CI UI - visual representation of the pipelines
 ---
 ### Example
 ```bash
 docker-compose up
 fly -t local login -c http://127.0.0.1:8080
-fly -t local set-pipeline -p demo -c tasks-only.yml
+fly -t local set-pipeline -p demo -c 1-task-only.yml
 ```
 ---
 ### Resources types
