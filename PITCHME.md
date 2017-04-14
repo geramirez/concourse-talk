@@ -17,7 +17,8 @@
 - Maintained by Pivotal
 ---
 ## What is Concourse CI - TLDR?
-Is a continuous integration tool, which allows/forces users to declare all their CI pipelines configurations in yaml or containers. 
+It's a continuous integration tool which creates environments and runs scripts.
+What makes Concourse CI unique is that it forces users to declare configuration upfront.
 ---
 ## What does that mean?
 - CI pipeline configurations and tasks can be checked into version control
@@ -74,10 +75,6 @@ resources:
 ## Pipelines
 Combination of resources and jobs
 ![pipeline-image](https://concourse.ci/pipes.svg)
----
-### Tools 
-- fly cli - cli tool used to configure concourse (think cf cli or jenkins cli)
-- Concourse CI UI - visual representation of the pipelines
 ---
 ### Example
 ```bash
